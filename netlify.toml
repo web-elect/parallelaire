@@ -1,0 +1,14 @@
+[build]
+command = "npm run build:docs"
+publish = "docs"
+
+[build.environment]
+NODE_VERSION = "22.13.0"
+NETLIFY_NEXT_PLUGIN_SKIP = "true"
+
+[[headers]]
+for = "/*"
+[headers.values]
+X-Frame-Options = "SAMEORIGIN"
+X-Content-Type-Options = "nosniff"
+Referrer-Policy = "strict-origin-when-cross-origin"

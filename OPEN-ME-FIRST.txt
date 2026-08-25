@@ -1,0 +1,37 @@
+PARALLEL AIRE - UPLOAD READY
+
+ITO LANG ANG IA-UPLOAD MO SA BAGONG GITHUB REPO:
+
+- app
+- lib
+- public
+- scripts
+- .env.example
+- .gitignore
+- DEPLOY-NETLIFY.md
+- eslint.config.mjs
+- netlify.toml
+- next-env.d.ts
+- next.config.ts
+- package-lock.json
+- package.json
+- SUPABASE-CMS-SETUP.md
+- tsconfig.json
+- vite.config.ts
+
+SUNOD:
+
+1. Gumawa ng bagong GitHub repo
+2. I-upload lahat ng laman ng folder na ito
+3. Sa Netlify, i-connect ang GitHub repo
+4. Add environment variables:
+   - NEXT_PUBLIC_SUPABASE_URL
+   - NEXT_PUBLIC_SUPABASE_ANON_KEY
+5. Deploy
+6. CMS login page:
+   /admin
+
+SUPABASE SETUP:
+
+Basahin:
+SUPABASE-CMS-SETUP.md
