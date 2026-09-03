@@ -30,7 +30,7 @@ export type TestimonialItem = {
   place: string;
 };
 
-export type CatalogProduct = { id?: string; name: string; category: "Residential" | "Commercial"; type: string; models: string; description: string; image_url: string; display_order: number; is_active: boolean };
+export type CatalogProduct = { id?: string; name: string; category: "Residential" | "Commercial"; type: string; models: string; price?: string | null; description: string; image_url: string; display_order: number; is_active: boolean };
 export type CatalogService = { id?: string; name: string; description: string; image_url: string; cta_text: string; display_order: number; is_active: boolean };
 export type CatalogBrand = { id?: string; name: string; logo_url: string; display_order: number; is_active: boolean };
 
@@ -422,7 +422,7 @@ export async function loadAdminCatalog<T extends CatalogProduct | CatalogService
 export async function saveCatalogItem(table: CatalogTable, item: CatalogProduct | CatalogService | CatalogBrand) {
   const supabase = getSupabaseBrowserClient();
   if (!supabase) throw new Error("Supabase environment variables are missing.");
-  const payload = { ...item, updated_at: new Date().toISOString() };
+  const payload = { ...item, ...(table === "products" ? { price: (item as CatalogProduct).price?.trim() || null } : {}), updated_at: new Date().toISOString() };
   const { error } = item.id ? await supabase.from(table).update(payload).eq("id", item.id) : await supabase.from(table).insert(payload);
   if (error) throw error;
 }

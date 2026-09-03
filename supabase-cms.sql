@@ -15,6 +15,8 @@ create table if not exists public.products (
   type text not null, models text not null default '', description text not null default '', image_url text not null default '',
   display_order integer not null default 0, is_active boolean not null default true, created_at timestamptz not null default now(), updated_at timestamptz not null default now()
 );
+alter table public.products add column if not exists price text;
+
 create table if not exists public.services (
   id uuid primary key default gen_random_uuid(), name text not null, description text not null default '', image_url text not null default '',
   cta_text text not null default 'LEARN MORE', display_order integer not null default 0, is_active boolean not null default true,

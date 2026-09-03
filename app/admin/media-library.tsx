@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import EditorGuide from "./editor-guide";
 import { getSupabaseBrowserClient } from "../../lib/site-content";
 
 type Asset = { path: string; url: string };
@@ -47,6 +48,7 @@ export default function MediaLibrary({ onSelect }: { onSelect: (url: string) => 
     {open && <div role="dialog" aria-modal="true" aria-label="Supabase media library" className="fixed inset-0 z-[80] overflow-auto bg-white p-6 text-[#08275B]">
       <div className="flex items-center justify-between"><h2 className="text-xl font-bold">Media Library</h2><button type="button" onClick={() => setOpen(false)}>Close</button></div>
       <p className="my-3 text-sm">Select an existing Supabase image to reuse it.</p>
+      <div className="mb-4 max-w-xl"><EditorGuide topic="media" /></div>
       {loading && <p role="status">Loading images...</p>}
       {error && <p role="alert" className="text-red-700">{error}</p>}
       {!loading && !error && !assets.length && <p>No uploaded images yet. Use Upload or Replace to add one.</p>}

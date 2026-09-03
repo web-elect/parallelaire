@@ -69,11 +69,13 @@ const defaultProductGroups = [
 function ProductCard({
   name,
   models,
+  price,
   image,
   alt,
 }: {
   name: string;
   models: string;
+  price?: string | null;
   image: string;
   alt: string;
 }) {
@@ -95,6 +97,7 @@ function ProductCard({
         <p className="mt-2 text-left text-[15px] font-semibold tracking-[0.02em] text-[#1557C8]">
           {models}
         </p>
+        {price?.trim() ? <p className="mt-2 text-left text-[18px] font-bold text-[#08275B]">{price.trim()}</p> : null}
         <a
           href="#contact-us"
           className="mt-auto pt-6 text-left text-[15px] font-semibold text-[#1262D6] transition hover:text-[#0F4FB2]"
@@ -149,7 +152,7 @@ export default function ProductsSection({ products }: { products?: CatalogProduc
               }`}
             >
               {group.cards.map((card) => (
-                <ProductCard key={card.id ?? `${group.id}-${card.name}-${card.display_order}`} name={card.name} models={card.models} image={card.image_url} alt={`${card.name} air conditioning product`} />
+                <ProductCard key={card.id ?? `${group.id}-${card.name}-${card.display_order}`} name={card.name} models={card.models} price={card.price} image={card.image_url} alt={`${card.name} air conditioning product`} />
               ))}
             </div>
           </div>
