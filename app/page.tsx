@@ -357,6 +357,20 @@ export default function Home() {
   useEffect(() => {
     let isMounted = true;
 
+    const receivePreviewUpdate = (event: MessageEvent) => {
+      if (event.origin !== window.location.origin || !event.data) return;
+      if (event.data.type === 'parallel-aire-preview') {
+        if (event.data.content) setSiteContent(event.data.content);
+        if (event.data.products) setProducts(event.data.products);
+        if (event.data.services) setCatalogServices(event.data.services);
+        if (event.data.brands) setBrands(event.data.brands);
+      }
+      if (event.data.type === 'parallel-aire-scroll' && typeof event.data.section === 'string') {
+        document.getElementById(event.data.section)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    };
+    window.addEventListener('message', receivePreviewUpdate);
+
     void loadPublicSiteContent().then((content) => {
       if (isMounted) {
         setSiteContent(content);
@@ -368,6 +382,7 @@ export default function Home() {
 
     return () => {
       isMounted = false;
+      window.removeEventListener('message', receivePreviewUpdate);
     };
   }, []);
 
@@ -556,7 +571,7 @@ export default function Home() {
               <div className="rounded-[2rem] border border-slate-100 bg-[linear-gradient(180deg,#ffffff_0%,#f8f4ef_48%,#eef4ff_100%)] p-3 shadow-[0_20px_60px_rgba(15,35,89,0.08)] sm:p-4 lg:rounded-[3rem] lg:p-5">
                 <div className="overflow-hidden rounded-[1.5rem] bg-white lg:rounded-[2.5rem]">
                   <Image
-                    src="/hero-premium.png"
+                    src={siteContent.hero.image}
                     alt="Bright living room with wall-mounted air conditioner"
                     width={1600}
                     height={1000}

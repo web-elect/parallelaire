@@ -367,7 +367,7 @@ export async function getCmsSession() {
   return session;
 }
 
-export async function uploadCmsAsset(file: File, folder = "cms") {
+export async function uploadCmsAsset(file: File, folder = "general") {
   const supabase = getSupabaseBrowserClient();
   if (!supabase) {
     throw new Error("Supabase environment variables are missing.");
@@ -376,15 +376,22 @@ export async function uploadCmsAsset(file: File, folder = "cms") {
   if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
     throw new Error("Use a JPG, PNG, or WEBP image.");
   }
-  if (file.size > 5 * 1024 * 1024) {
-    throw new Error("Image must be 5 MB or smaller.");
+  const limit = folder === "brands" ? 1024 * 1024 : 5 * 1024 * 1024;
+  if (!file.size || file.size > limit) {
+    throw new Error(folder === "brands" ? "Logo must be between 1 byte and 1 MB." : "Image must be between 1 byte and 5 MB.");
   }
+  if (!["hero", "about", "products", "services", "brands", "projects", "general", "cms"].includes(folder)) throw new Error("Unsupported media folder.");
+  const { data: allowed, error: permissionError } = await supabase.rpc("is_cms_admin");
+  if (permissionError || !allowed) throw new Error("An approved CMS admin account is required to upload media.");
+  // Decode before uploading to reject files with a false image MIME type.
+  const bitmap = await createImageBitmap(file);
+  bitmap.close();
   const sanitizedName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
-  const filePath = `${folder}/${Date.now()}-${sanitizedName}`;
+  const filePath = `${folder}/${crypto.randomUUID()}-${sanitizedName}`;
 
   const { error } = await supabase.storage
     .from("site-assets")
-    .upload(filePath, file, { upsert: true });
+    .upload(filePath, file, { upsert: false, contentType: file.type, cacheControl: "31536000" });
 
   if (error) {
     throw error;
