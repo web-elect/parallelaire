@@ -31,6 +31,10 @@ import ProjectsSection from './projects-section';
 import ProductsSection from './products-section';
 import {
   defaultSiteContent,
+  defaultBrands,
+  defaultCatalogServices,
+  defaultProducts,
+  loadPublicCatalog,
   loadPublicSiteContent,
   type ContactInfoItem,
   type SupportPointItem,
@@ -338,6 +342,9 @@ function SocialBrandIcon({ type }: { type: 'facebook' | 'messenger' }) {
 
 export default function Home() {
   const [siteContent, setSiteContent] = useState(defaultSiteContent);
+  const [products, setProducts] = useState(defaultProducts);
+  const [brands, setBrands] = useState(defaultBrands);
+  const [catalogServices, setCatalogServices] = useState(defaultCatalogServices);
   const [inquiryForm, setInquiryForm] = useState({
     name: '',
     email: '',
@@ -355,6 +362,9 @@ export default function Home() {
         setSiteContent(content);
       }
     });
+    void loadPublicCatalog('products').then((items) => isMounted && setProducts(items));
+    void loadPublicCatalog('brands').then((items) => isMounted && setBrands(items));
+    void loadPublicCatalog('services').then((items) => isMounted && setCatalogServices(items));
 
     return () => {
       isMounted = false;
@@ -669,46 +679,27 @@ export default function Home() {
         </div>
 
         <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-          {siteContent.services.map((service) => (
+          {catalogServices.map((service) => (
             <article
-              key={service.title}
+              key={service.id ?? service.name}
               className="group relative flex h-full flex-col overflow-hidden rounded-[28px] border border-slate-100 bg-white shadow-[0_16px_34px_rgba(16,30,75,0.08)] transition hover:-translate-y-1 hover:shadow-[0_22px_42px_rgba(16,30,75,0.12)]"
             >
               <div className="px-5 pt-5">
                 <div className="flex items-center gap-3 rounded-[18px] bg-white px-3 pb-3 pt-1">
                   <div className="flex h-11 w-11 items-center justify-center rounded-full border border-[#f8af58]/35 bg-[#eff5ff] text-[#1b59c9] shadow-[0_8px_18px_rgba(27,89,201,0.08)]">
-                    {service.icon === 'shield' ? (
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="1.8"
-                        className="h-6 w-6 text-[#1b59c9]"
-                      >
-                        <path d="M12 3l7 3v5c0 4.7-2.8 8.4-7 10-4.2-1.6-7-5.3-7-10V6l7-3z" strokeLinejoin="round" />
-                        <path d="M9.2 12.3l2.1 2.1 3.8-4.2" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    ) : (
-                      <Image
-                        src={service.iconImage}
-                        alt=""
-                        width={44}
-                        height={44}
-                        className={`object-contain ${service.icon === 'tools' ? 'h-6 w-6' : 'h-7 w-7'}`}
-                      />
-                    )}
+                    <Package className="h-6 w-6 text-[#1b59c9]" strokeWidth={1.8} />
                   </div>
                   <div>
                     <h3 className="text-[18px] font-semibold leading-tight text-[#133f8f]">
-                      {service.title}
+                      {service.name}
                     </h3>
                   </div>
                 </div>
                 <div className="overflow-hidden rounded-[18px] border border-slate-100 bg-[linear-gradient(180deg,#f9fbff,#eef5ff)] p-3">
                   <div className="flex min-h-[280px] w-full items-center justify-center rounded-[14px] bg-white p-3 sm:min-h-[320px]">
                     <img
-                      src={service.image}
-                      alt={service.title}
+                      src={service.image_url}
+                      alt={service.name}
                       loading="lazy"
                       className="max-h-[300px] w-full object-contain transition duration-500 group-hover:scale-[1.02] sm:max-h-[340px]"
                     />
@@ -718,7 +709,7 @@ export default function Home() {
 
               <div className="flex flex-1 flex-col px-6 pb-6 pt-6">
                 <p className="mt-4 text-[15px] font-normal leading-7 text-slate-600">
-                  {service.text}
+                  {service.description}
                 </p>
 
                 <div className="mt-auto flex justify-center pt-7">
@@ -726,7 +717,7 @@ export default function Home() {
                     href="#contact-us"
                     className="inline-flex items-center justify-center rounded-md bg-[#1b59c9] px-4 py-2 text-sm font-semibold text-white shadow-[0_10px_20px_rgba(27,89,201,0.16)] transition hover:bg-[#0f4ca8]"
                   >
-                    LEARN MORE
+                    {service.cta_text || 'LEARN MORE'}
                   </a>
                 </div>
               </div>
@@ -736,7 +727,7 @@ export default function Home() {
 
       </section>
 
-      <ProductsSection />
+      <ProductsSection products={products} />
 
       <section className="mx-auto max-w-7xl px-4 py-4 sm:px-6">
         <div className="rounded-[28px] bg-[radial-gradient(circle_at_50%_20%,rgba(255,255,255,0.14),transparent_20%),linear-gradient(90deg,#0c3f9a_0%,#0f57bf_45%,#1f76da_100%)] px-5 py-10 text-white shadow-[0_20px_45px_rgba(14,60,140,0.24)] sm:px-8">
@@ -777,13 +768,13 @@ export default function Home() {
           and commercial requirements.
         </p>
         <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4 xl:grid-cols-6">
-          {serviceBrands.map((brand) => (
+          {brands.map((brand) => (
             <div
               key={brand.name}
               className="flex h-[96px] items-center justify-center rounded-[12px] border border-[#E4EAF2] bg-white px-4 py-3"
             >
               <img
-                src={brand.logo}
+                src={brand.logo_url}
                 alt={`${brand.name} brand logo`}
                 className="h-12 w-full max-w-[120px] object-contain"
                 loading="lazy"

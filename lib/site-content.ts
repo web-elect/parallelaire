@@ -30,6 +30,23 @@ export type TestimonialItem = {
   place: string;
 };
 
+export type CatalogProduct = { id?: string; name: string; category: "Residential" | "Commercial"; type: string; models: string; description: string; image_url: string; display_order: number; is_active: boolean };
+export type CatalogService = { id?: string; name: string; description: string; image_url: string; cta_text: string; display_order: number; is_active: boolean };
+export type CatalogBrand = { id?: string; name: string; logo_url: string; display_order: number; is_active: boolean };
+
+export const defaultProducts: CatalogProduct[] = [
+  { name: "Wall Mounted", category: "Residential", type: "Wall Mounted", models: "Optima • Aura", description: "Residential wall-mounted air conditioning units.", image_url: "https://strapi.carrier.com.ph/uploads/Image_23_12aadcdd46.png", display_order: 1, is_active: true },
+  { name: "Window Type", category: "Residential", type: "Window Type", models: "Optima • Aura", description: "Carrier window-type air conditioning units.", image_url: "https://strapi.carrier.com.ph/uploads/CAR_Optima_Inverter_0_75_HP_1_0_HP_1_45ec258d94.png", display_order: 2, is_active: true },
+  { name: "Floor Mounted", category: "Residential", type: "Floor Mounted", models: "Slim • Opus", description: "Floor-mounted comfort for residential spaces.", image_url: "https://strapi.carrier.com.ph/uploads/carrier_opus_668a980c25.webp", display_order: 3, is_active: true },
+  { name: "Floor Mounted", category: "Commercial", type: "Floor Mounted", models: "Optima", description: "Commercial floor-mounted cooling solutions.", image_url: "https://strapi.carrier.com.ph/uploads/Image_20_ea0469d063.png", display_order: 4, is_active: true },
+  { name: "Under Ceiling", category: "Commercial", type: "Under Ceiling", models: "Commercial Series", description: "Under-ceiling commercial air conditioning.", image_url: "https://brandportal.carrier.com/transform/da527147-7b33-49da-ba3f-fcf331fb7c82/carrier-40vmu-30k-underceiling-indoor-unit", display_order: 5, is_active: true },
+  { name: "Cassette Type", category: "Commercial", type: "Cassette Type", models: "Optima Cassette", description: "Ceiling cassette systems for commercial areas.", image_url: "https://strapi.carrier.com.ph/uploads/Image_25_b12cf24e90.png", display_order: 6, is_active: true },
+  { name: "VRF", category: "Commercial", type: "VRF", models: "XCT7 System", description: "Variable refrigerant flow system solutions.", image_url: "https://strapi.carrier.com.ph/uploads/Image_11_4f19e889a4.png", display_order: 7, is_active: true },
+];
+
+export const defaultBrands: CatalogBrand[] = ["Carrier", "Midea", "Toshiba", "Condura", "Panasonic", "Mitsubishi", "LG", "Daikin", "Samsung", "Koppel", "Kolin"].map((name, index) => ({ name, logo_url: `/assets/brands/${name.toLowerCase() === "mitsubishi" ? "mitsubishi.svg" : name.toLowerCase() === "toshiba" || name.toLowerCase() === "koppel" ? `${name.toLowerCase()}.svg` : `${name.toLowerCase()}.png`}`, display_order: index + 1, is_active: true }));
+
+
 export type SiteContent = {
   navItems: string[];
   company: {
@@ -252,6 +269,11 @@ export const defaultSiteContent: SiteContent = {
   ],
 };
 
+export const defaultCatalogServices: CatalogService[] = defaultSiteContent.services.map((service, index) => ({
+  name: service.title, description: service.text, image_url: service.image,
+  cta_text: "LEARN MORE", display_order: index + 1, is_active: true,
+}));
+
 let browserClient: SupabaseClient | null = null;
 
 export function getSupabaseBrowserClient() {
@@ -351,6 +373,12 @@ export async function uploadCmsAsset(file: File, folder = "cms") {
     throw new Error("Supabase environment variables are missing.");
   }
 
+  if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+    throw new Error("Use a JPG, PNG, or WEBP image.");
+  }
+  if (file.size > 5 * 1024 * 1024) {
+    throw new Error("Image must be 5 MB or smaller.");
+  }
   const sanitizedName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
   const filePath = `${folder}/${Date.now()}-${sanitizedName}`;
 
@@ -364,4 +392,37 @@ export async function uploadCmsAsset(file: File, folder = "cms") {
 
   const { data } = supabase.storage.from("site-assets").getPublicUrl(filePath);
   return data.publicUrl;
+}
+
+type CatalogTable = "products" | "services" | "brands";
+const catalogFallbacks = { products: defaultProducts, services: defaultCatalogServices, brands: defaultBrands } as const;
+
+export async function loadPublicCatalog<T extends CatalogProduct | CatalogService | CatalogBrand>(table: CatalogTable): Promise<T[]> {
+  const supabase = getSupabaseBrowserClient();
+  if (!supabase) return catalogFallbacks[table] as T[];
+  const { data, error } = await supabase.from(table).select("*").eq("is_active", true).order("display_order");
+  return error || !data?.length ? (catalogFallbacks[table] as T[]) : (data as T[]);
+}
+
+export async function loadAdminCatalog<T extends CatalogProduct | CatalogService | CatalogBrand>(table: CatalogTable): Promise<T[]> {
+  const supabase = getSupabaseBrowserClient();
+  if (!supabase) throw new Error("Supabase environment variables are missing.");
+  const { data, error } = await supabase.from(table).select("*").order("display_order");
+  if (error) throw error;
+  return (data ?? []) as T[];
+}
+
+export async function saveCatalogItem(table: CatalogTable, item: CatalogProduct | CatalogService | CatalogBrand) {
+  const supabase = getSupabaseBrowserClient();
+  if (!supabase) throw new Error("Supabase environment variables are missing.");
+  const payload = { ...item, updated_at: new Date().toISOString() };
+  const { error } = item.id ? await supabase.from(table).update(payload).eq("id", item.id) : await supabase.from(table).insert(payload);
+  if (error) throw error;
+}
+
+export async function deleteCatalogItem(table: CatalogTable, id: string) {
+  const supabase = getSupabaseBrowserClient();
+  if (!supabase) throw new Error("Supabase environment variables are missing.");
+  const { error } = await supabase.from(table).delete().eq("id", id);
+  if (error) throw error;
 }

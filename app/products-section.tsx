@@ -1,6 +1,8 @@
 "use client";
 
-const productGroups = [
+import type { CatalogProduct } from "../lib/site-content";
+
+const defaultProductGroups = [
   {
     id: "residential",
     label: "Residential",
@@ -104,7 +106,18 @@ function ProductCard({
   );
 }
 
-export default function ProductsSection() {
+export default function ProductsSection({ products }: { products?: CatalogProduct[] }) {
+  const fallbackProducts: CatalogProduct[] = defaultProductGroups.flatMap((group, groupIndex) =>
+    group.cards.map((card, cardIndex) => ({
+      name: card.name, category: group.label, type: card.name, models: card.models,
+      description: "", image_url: card.image, display_order: groupIndex * 10 + cardIndex, is_active: true,
+    })),
+  );
+  const activeProducts = products ?? fallbackProducts;
+  const productGroups = [
+    { id: "residential", label: "Residential", cards: activeProducts.filter((item) => item.category === "Residential") },
+    { id: "commercial", label: "Commercial", cards: activeProducts.filter((item) => item.category === "Commercial") },
+  ];
   return (
     <section id="products" className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
       <div className="mx-auto max-w-3xl text-center">
@@ -136,7 +149,7 @@ export default function ProductsSection() {
               }`}
             >
               {group.cards.map((card) => (
-                <ProductCard key={`${group.id}-${card.name}`} {...card} />
+                <ProductCard key={card.id ?? `${group.id}-${card.name}-${card.display_order}`} name={card.name} models={card.models} image={card.image_url} alt={`${card.name} air conditioning product`} />
               ))}
             </div>
           </div>

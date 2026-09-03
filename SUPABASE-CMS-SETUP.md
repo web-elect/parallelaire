@@ -21,6 +21,18 @@ For Netlify, add the same two values in:
 
 ## 2. Create the Table
 
+For the upgraded CMS, run the complete `supabase-cms.sql` file first. It creates the Products, Services, Brands, CMS Admins, and secure Storage policies.
+
+After creating the CMS login user, run this once with that user's UUID from Authentication > Users:
+
+```sql
+insert into public.cms_admins (user_id)
+values ('YOUR_CMS_USER_UUID')
+on conflict (user_id) do nothing;
+```
+
+The older `site_content` setup below remains supported for Website Content.
+
 Run this SQL in the Supabase SQL editor:
 
 ```sql
