@@ -113,7 +113,7 @@ export const defaultSiteContent: SiteContent = {
     facebook: "https://www.facebook.com/profile.php?id=61559878689817",
     messenger: "https://m.me/61559878689817",
     adminFacebook: "https://www.facebook.com/parallel.aire",
-    email: "jelequin@gmail.com",
+    email: "admin@parallelaire.com",
   },
   hero: {
     eyebrow: "Cool Comfort. Expert Care.",
@@ -183,7 +183,7 @@ export const defaultSiteContent: SiteContent = {
   contactInfo: [
     {
       title: "Email",
-      value: "jelequin@gmail.com",
+      value: "admin@parallelaire.com",
       detail: "We'll get back to you as soon as possible.",
       icon: "mail",
     },

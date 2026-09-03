@@ -89,15 +89,19 @@ const whyChoose = [
   'Customer satisfaction',
 ];
 
-const brands = [
-  { name: 'Carrier', logo: '/images/brands/carrier.png' },
-  { name: 'Midea', logo: '/images/brands/midea-logo.png' },
-  { name: 'Koppel', logo: '/images/brands/koppel.svg' },
-  { name: 'Samsung', logo: '/images/brands/samsung.png' },
-  { name: 'LG', logo: '/images/brands/lg.png' },
-  { name: 'Daikin', logo: '/images/brands/daikin.png' },
-  { name: 'Panasonic', logo: '/images/brands/panasonic.png' },
-];
+const serviceBrands = [
+  { name: 'Carrier', logo: '/assets/brands/carrier.png' },
+  { name: 'Midea', logo: '/assets/brands/midea.png' },
+  { name: 'Toshiba', logo: '/assets/brands/toshiba.svg' },
+  { name: 'Condura', logo: '/assets/brands/condura.png' },
+  { name: 'Panasonic', logo: '/assets/brands/panasonic.png' },
+  { name: 'Mitsubishi', logo: '/assets/brands/mitsubishi.svg' },
+  { name: 'LG', logo: '/assets/brands/lg.png' },
+  { name: 'Daikin', logo: '/assets/brands/daikin.png' },
+  { name: 'Samsung', logo: '/assets/brands/samsung.png' },
+  { name: 'Koppel', logo: '/assets/brands/koppel.svg' },
+  { name: 'Kolin', logo: '/assets/brands/kolin.png' },
+] as const;
 
 const paymentMethods = [
   {
@@ -136,7 +140,7 @@ const paymentMethods = [
 const contactInfo = [
   {
     title: 'Email',
-    value: 'jelequin@gmail.com',
+    value: 'admin@parallelaire.com',
     detail: "We'll get back to you as soon as possible.",
     icon: Mail,
   },
@@ -764,37 +768,28 @@ export default function Home() {
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
-        <h2 className="text-center text-3xl font-bold leading-tight text-[#133f8f] sm:text-4xl">
-          Brands We Carry
+        <h2 className="text-center text-3xl font-bold leading-tight text-[#08275B] sm:text-4xl">
+          Brands We Service
         </h2>
         <div className="mx-auto mt-3 h-1 w-16 rounded-full bg-[#f08e2f]" />
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
-          {brands.map((brand) => (
+        <p className="mx-auto mt-5 max-w-3xl text-center text-[16px] leading-7 text-[#64748B] sm:text-[18px]">
+          Parallel Aire supports trusted airconditioning brands for residential
+          and commercial requirements.
+        </p>
+        <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4 xl:grid-cols-6">
+          {serviceBrands.map((brand) => (
             <div
               key={brand.name}
-              className="flex h-28 items-center justify-center rounded-[12px] border border-slate-200 bg-white px-5 py-4 shadow-[0_8px_24px_rgba(16,30,75,0.06)]"
+              className="flex h-[96px] items-center justify-center rounded-[12px] border border-[#E4EAF2] bg-white px-4 py-3"
             >
               <img
                 src={brand.logo}
-                alt={`${brand.name} logo`}
-                className="h-12 w-full max-w-[7.5rem] object-contain"
+                alt={`${brand.name} brand logo`}
+                className="h-12 w-full max-w-[120px] object-contain"
+                loading="lazy"
               />
             </div>
           ))}
-        </div>
-        <div className="mt-8 flex justify-center gap-3">
-          <span className="h-3 w-3 rounded-full bg-[#1b59c9]" />
-          <span className="h-3 w-3 rounded-full bg-slate-300" />
-          <span className="h-3 w-3 rounded-full bg-slate-300" />
-          <span className="h-3 w-3 rounded-full bg-slate-300" />
-        </div>
-        <div className="mt-8 flex justify-center">
-          <a
-            href="#contact-us"
-            className="inline-flex items-center justify-center rounded-lg border-2 border-[#f08e2f] px-7 py-3 text-sm font-semibold text-[#1b59c9]"
-          >
-            VIEW ALL BRANDS
-          </a>
         </div>
       </section>
 
@@ -816,13 +811,22 @@ export default function Home() {
                       <h3 className="text-[19px] font-bold leading-tight text-[#08275B]">
                         {item.title}
                       </h3>
-                      <p className="mt-2 text-[15px] leading-7 text-[#08275B]">
-                        {item.value.split('\n').map((line) => (
-                          <span key={line} className="block">
-                            {line}
-                          </span>
-                        ))}
-                      </p>
+                      {item.title === 'Email' ? (
+                        <a
+                          href={`mailto:${item.value}`}
+                          className="mt-2 block text-[15px] leading-7 text-[#08275B] transition hover:text-[#1557C8] hover:underline"
+                        >
+                          {item.value}
+                        </a>
+                      ) : (
+                        <p className="mt-2 text-[15px] leading-7 text-[#08275B]">
+                          {item.value.split('\n').map((line) => (
+                            <span key={line} className="block">
+                              {line}
+                            </span>
+                          ))}
+                        </p>
+                      )}
                       <p className="mt-3 max-w-[16rem] text-[15px] leading-7 text-[#64748B]">
                         {item.detail}
                       </p>
@@ -1178,7 +1182,12 @@ export default function Home() {
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/25 bg-white/10">
                     <Mail className="h-4 w-4 text-white" strokeWidth={1.8} absoluteStrokeWidth />
                   </span>
-                  <span className="pt-1 text-white/95">jelequin@gmail.com</span>
+                  <a
+                    href={`mailto:${siteContent.social.email}`}
+                    className="pt-1 text-white/95 transition hover:text-[#FFB067] hover:underline"
+                  >
+                    {siteContent.social.email}
+                  </a>
                 </div>
                 <div className="flex items-start gap-3">
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/25 bg-white/10">

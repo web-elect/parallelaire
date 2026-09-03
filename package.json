@@ -10,9 +10,8 @@
     "build": "vinext build",
     "start": "vinext start",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
-    "export:pages": "node scripts/export-github-pages.mjs",
-    "build:pages": "npm run build && npm run export:pages",
-    "build:docs": "npm run build && node scripts/export-github-pages.mjs docs"
+    "export:static": "node scripts/export-static-site.mjs docs",
+    "build:netlify": "npm run build && npm run export:static"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.4",
