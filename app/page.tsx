@@ -1222,7 +1222,17 @@ export default function Home() {
           </div>
 
           <div className="mt-[30px] border-t border-white/20 pt-[18px] text-center text-[12px] text-white/72 sm:text-[13px]">
-            © 2026 PARALLEL AIRE. All Rights Reserved.
+            <p>© 2026 PARALLEL AIRE. All Rights Reserved.</p>
+            <p className="mt-1.5 text-[10px] font-normal tracking-[0.02em] sm:text-[11px]">
+              <a
+                href="https://www.facebook.com/smmsolutionsv2/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white/55 transition-colors hover:text-white/85 focus-visible:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/70"
+              >
+                Website Design &amp; Development by SMM Solutions by Pabs Rivera
+              </a>
+            </p>
           </div>
         </div>
       </footer>
